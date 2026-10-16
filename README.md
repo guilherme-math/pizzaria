@@ -91,7 +91,6 @@ Com JDK 21 configurado:
 
 Os testes nao exigem Atlas: usam repositorios simulados e Spring MVC com filtros reais de seguranca. Cobrem calculos, regras, auditoria, bloqueios com CSRF valido, revogacao de perfil na sessao, omissao de senha e renderizacao das telas Thymeleaf. Nao substituem a verificacao da persistencia real no Atlas.
 
-Veja `ROTEIRO_DEMONSTRACAO.md` para testar no navegador e gravar o video. Veja `VERIFICACAO.md` para o resultado das verificacoes feitas durante o desenvolvimento.
 
 ## Principais APIs
 
