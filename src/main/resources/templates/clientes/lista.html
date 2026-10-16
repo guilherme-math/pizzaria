@@ -11,7 +11,7 @@
         const clientes = await api('/api/clientes'); const tabela = document.getElementById('clientes'); tabela.replaceChildren();
         clientes.forEach(c => {
             const row = document.createElement('tr'); tabela.appendChild(row);
-            const endereco = [c.logradouro,c.numero,c.complemento,c.bairro,c.cidade,c.estado].filter(Boolean).join(', ') || c.endereco || '—';
+            const endereco = [c.logradouro,c.numero,c.complemento,c.bairro,c.cidade,c.estado].filter(Boolean).join(', ') || c.endereco || 'Não informado';
             [c.nome,c.telefone,endereco].forEach(valor => { const td = document.createElement('td'); td.textContent = valor; row.appendChild(td); });
             const acoes = document.createElement('td'); row.appendChild(acoes);
             if (editar) {

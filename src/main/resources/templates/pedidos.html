@@ -18,7 +18,7 @@
 (async function() {
     const perfil = /*[[${perfilAtual}]]*/ '';
     const money = value => Number(value || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-    const data = value => value ? new Date(value).toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}) : '—';
+    const data = value => value ? new Date(value).toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}) : 'Não informado';
     const nomesStatus = {
         RECEBIDO: 'Recebido',
         EM_PREPARACAO: 'Em preparação',
@@ -50,16 +50,16 @@
         document.getElementById('vazio').hidden = pedidos.length > 0;
         pedidos.reverse().forEach(p => {
             const card = document.createElement('article'); card.className = 'card mb-3'; lista.appendChild(card);
-            texto(card, 'div', `${p.clienteNome || p.clienteId} — ${nomeStatus(p.status)}`, 'card-header fw-bold');
+            texto(card, 'div', `${p.clienteNome || p.clienteId}: ${nomeStatus(p.status)}`, 'card-header fw-bold');
             const body = document.createElement('div'); body.className = 'card-body'; card.appendChild(body);
             texto(body, 'p', `Pedido: ${p.id}`, 'small text-muted');
             if (p.itens && p.itens.length) {
                 const ul = document.createElement('ul'); body.appendChild(ul);
-                p.itens.forEach(i => texto(ul, 'li', `${i.quantidade} × ${i.nome} — ${money(i.precoUnitario)} cada`));
+                p.itens.forEach(i => texto(ul, 'li', `${i.quantidade} × ${i.nome}: ${money(i.precoUnitario)} cada`));
                 texto(body, 'p', `Subtotal: ${money(p.subtotal)} | Desconto: ${p.percentualDesconto}% (${money(p.valorDesconto)}) | Total: ${money(p.total)}`, 'fw-bold');
             } else texto(body, 'p', `Pedido legado: ${p.quantidade || 0} × ${p.sabor || p.tipoPizza || 'item antigo'}`);
-            texto(body, 'p', `Entrada: ${data(p.entrada)} | Responsavel: ${p.responsavelEntrada || '—'}`, 'small');
-            texto(body, 'p', `Saida: ${data(p.saida)} | Responsavel: ${p.responsavelSaida || '—'}`, 'small');
+            texto(body, 'p', `Entrada: ${data(p.entrada)} | Responsavel: ${p.responsavelEntrada || 'Não informado'}`, 'small');
+            texto(body, 'p', `Saida: ${data(p.saida)} | Responsavel: ${p.responsavelSaida || 'Não informado'}`, 'small');
             if (p.justificativaCancelamento) texto(body, 'p', `Cancelamento: ${p.justificativaCancelamento}`);
             if (perfil === 'GERENTE' && p.itens && p.itens.length) {
                 const acoes = document.createElement('div'); acoes.className = 'd-flex flex-wrap gap-2'; body.appendChild(acoes);
@@ -93,7 +93,7 @@
                 const row = document.createElement('div'); row.className = 'row g-2 mb-3 align-items-end';
                 const produtoCol = document.createElement('label'); produtoCol.className = 'col-md-7'; produtoCol.textContent = 'Produto';
                 const produto = document.createElement('select'); produto.className = 'form-select'; produto.required = true;
-                produto.add(new Option('Selecione', '')); ativos.forEach(p => produto.add(new Option(`${p.nome} — ${money(p.preco)}`, p.id)));
+                produto.add(new Option('Selecione', '')); ativos.forEach(p => produto.add(new Option(`${p.nome}: ${money(p.preco)}`, p.id)));
                 produtoCol.appendChild(produto); row.appendChild(produtoCol);
                 const qtdCol = document.createElement('label'); qtdCol.className = 'col-md-3'; qtdCol.textContent = 'Quantidade';
                 const qtd = document.createElement('input'); qtd.type = 'number'; qtd.value = 1; qtd.min = 1; qtd.max = 999; qtd.required = true; qtd.className = 'form-control';

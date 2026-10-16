@@ -1,4 +1,4 @@
-# PediuPatrao — Pratica M1 Parte 2
+# PediuPatrao: Pratica M1 Parte 2
 
 Evolucao individual do sistema de pedidos em Java 21, Spring Boot 3.4.4, Spring Security, Thymeleaf e MongoDB Atlas. A arquitetura original de entidades, repositorios, servicos e controladores foi preservada.
 

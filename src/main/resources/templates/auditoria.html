@@ -10,7 +10,7 @@
         <span th:text="${evento.entidade + ' / ' + evento.entidadeId}"></span>
     </div>
     <div class="card-body">
-        <p><span th:text="${evento.usuario + ' (' + evento.perfil + ')'}"></span> —
+        <p><span th:text="${evento.usuario + ' (' + evento.perfil + ')'}"></span> |
         <time th:text="${evento.dataHora}" class="data-local"></time></p>
         <p th:if="${evento.justificativa != null}" th:text="${'Justificativa: ' + evento.justificativa}"></p>
         <div class="table-responsive"><table class="table table-sm">
