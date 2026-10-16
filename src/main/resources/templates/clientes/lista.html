@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><body>
+<div th:fragment="content">
+<div class="d-flex justify-content-between mb-4"><h2>Clientes</h2><a class="btn btn-primary" href="/clientes/novo" th:if="${perfilAtual == 'ATENDENTE'}">Novo cliente</a></div>
+<div id="mensagem" class="alert alert-danger" role="alert" tabindex="-1" hidden></div>
+<div class="table-responsive"><table class="table"><thead><tr><th>Nome</th><th>Telefone</th><th>Endereco</th><th>Acoes</th></tr></thead><tbody id="clientes"></tbody></table></div>
+<script th:inline="javascript">
+(async function() {
+    const editar = /*[[${perfilAtual == 'ATENDENTE'}]]*/ false;
+    async function carregar() {
+        const clientes = await api('/api/clientes'); const tabela = document.getElementById('clientes'); tabela.replaceChildren();
+        clientes.forEach(c => {
+            const row = document.createElement('tr'); tabela.appendChild(row);
+            const endereco = [c.logradouro,c.numero,c.complemento,c.bairro,c.cidade,c.estado].filter(Boolean).join(', ') || c.endereco || '—';
+            [c.nome,c.telefone,endereco].forEach(valor => { const td = document.createElement('td'); td.textContent = valor; row.appendChild(td); });
+            const acoes = document.createElement('td'); row.appendChild(acoes);
+            if (editar) {
+                const link = document.createElement('a'); link.href = '/clientes/editar/' + encodeURIComponent(c.id); link.className = 'btn btn-sm btn-outline-primary me-2'; link.textContent = 'Editar'; acoes.appendChild(link);
+                const btn = document.createElement('button'); btn.className = 'btn btn-sm btn-outline-danger'; btn.textContent = 'Excluir'; acoes.appendChild(btn);
+                btn.onclick = async () => { if (!confirm('Excluir cliente?')) return; try { await api('/api/clientes/' + c.id, 'DELETE'); await carregar(); } catch(e) { mostrarErro(e); } };
+            }
+        });
+    }
+    try { await carregar(); } catch(e) { mostrarErro(e); }
+})();
+</script>
+</div>
+</body></html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><body>
+<div th:fragment="content">
+<h2>Auditoria</h2>
+<p>Historico de operacoes. Contem dados cadastrais para conferencia; acesso restrito a ADMIN e GERENTE.</p>
+<p th:if="${pagina.empty}">Nenhum evento registrado.</p>
+<article class="card mb-3" th:each="evento : ${pagina.content}">
+    <div class="card-header">
+        <strong th:text="${evento.operacao}"></strong>
+        <span th:text="${evento.entidade + ' / ' + evento.entidadeId}"></span>
+    </div>
+    <div class="card-body">
+        <p><span th:text="${evento.usuario + ' (' + evento.perfil + ')'}"></span> —
+        <time th:text="${evento.dataHora}" class="data-local"></time></p>
+        <p th:if="${evento.justificativa != null}" th:text="${'Justificativa: ' + evento.justificativa}"></p>
+        <div class="table-responsive"><table class="table table-sm">
+            <thead><tr><th>Campo</th><th>Anterior</th><th>Novo</th></tr></thead>
+            <tbody><tr th:each="campo : ${evento.campos}">
+                <td th:text="${campo.key}"></td>
+                <td class="text-break" th:text="${campo.value.anterior}"></td>
+                <td class="text-break" th:text="${campo.value.novo}"></td>
+            </tr></tbody>
+        </table></div>
+    </div>
+</article>
+<div class="d-flex gap-3 mb-4">
+<a th:if="${pagina.hasPrevious()}" th:href="@{/auditoria(pagina=${pagina.number - 1})}">Anterior</a>
+<span th:text="${'Pagina ' + (pagina.number + 1)}"></span>
+<a th:if="${pagina.hasNext()}" th:href="@{/auditoria(pagina=${pagina.number + 1})}">Proxima</a>
+</div>
+<script>document.querySelectorAll('.data-local').forEach(el => { el.textContent = new Date(el.textContent).toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}); });</script>
+</div>
+</body></html>
