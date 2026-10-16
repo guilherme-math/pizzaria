@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"><body>
+<div th:fragment="content">
+<h2>Pedidos</h2>
+<div id="mensagem" class="alert alert-danger" role="alert" tabindex="-1" hidden></div>
+<form id="novo-pedido" class="card card-body mb-4" th:if="${perfilAtual == 'ATENDENTE'}">
+    <h3 class="h5">Registrar pedido</h3>
+    <label for="cliente" class="form-label">Cliente</label>
+    <select id="cliente" class="form-select mb-3" required><option value="">Selecione</option></select>
+    <div id="itens"></div>
+    <div class="d-flex gap-2"><button type="button" id="adicionar-item" class="btn btn-outline-secondary">Adicionar item</button>
+    <button class="btn btn-primary" type="submit">Registrar pedido</button></div>
+    <p class="text-muted mt-2 mb-0">Precos e total sao calculados pelo servidor. Descontos sao aplicados pelo gerente.</p>
+</form>
+<p id="vazio" hidden>Nenhum pedido registrado.</p>
+<div id="lista-pedidos"></div>
+<script th:inline="javascript">
+(async function() {
+    const perfil = /*[[${perfilAtual}]]*/ '';
+    const money = value => Number(value || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+    const data = value => value ? new Date(value).toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}) : 'Não informado';
+    const nomesStatus = {
+        RECEBIDO: 'Recebido',
+        EM_PREPARACAO: 'Em preparação',
+        PRONTO: 'Pronto',
+        SAIU_PARA_ENTREGA: 'Saiu para entrega',
+        RETIRADO: 'Retirado',
+        FINALIZADO: 'Finalizado',
+        CANCELADO: 'Cancelado'
+    };
+    const nomeStatus = status => nomesStatus[status] || String(status || '').replaceAll('_', ' ');
+    const antesSaida = ['RECEBIDO','EM_PREPARACAO','PRONTO'];
+    const transicoes = { RECEBIDO: ['EM_PREPARACAO'], EM_PREPARACAO: ['PRONTO'], PRONTO: ['SAIU_PARA_ENTREGA','RETIRADO'], SAIU_PARA_ENTREGA: ['FINALIZADO'], RETIRADO: ['FINALIZADO'] };
+    function texto(parent, tag, value, classes) {
+        const el = document.createElement(tag); el.textContent = value;
+        if (classes) el.className = classes;
+        parent.appendChild(el); return el;
+    }
+    function botao(parent, label, executar, classe = 'btn-outline-primary') {
+        const btn = texto(parent, 'button', label, 'btn btn-sm ' + classe);
+        btn.type = 'button';
+        btn.onclick = async () => {
+            btn.disabled = true;
+            try { await executar(); } catch(e) { mostrarErro(e); } finally { btn.disabled = false; }
+        };
+    }
+    async function carregar() {
+        const pedidos = await api('/api/pedidos');
+        const lista = document.getElementById('lista-pedidos'); lista.replaceChildren();
+        document.getElementById('vazio').hidden = pedidos.length > 0;
+        pedidos.reverse().forEach(p => {
+            const card = document.createElement('article'); card.className = 'card mb-3'; lista.appendChild(card);
+            texto(card, 'div', `${p.clienteNome || p.clienteId}: ${nomeStatus(p.status)}`, 'card-header fw-bold');
+            const body = document.createElement('div'); body.className = 'card-body'; card.appendChild(body);
+            texto(body, 'p', `Pedido: ${p.id}`, 'small text-muted');
+            if (p.itens && p.itens.length) {
+                const ul = document.createElement('ul'); body.appendChild(ul);
+                p.itens.forEach(i => texto(ul, 'li', `${i.quantidade} × ${i.nome}: ${money(i.precoUnitario)} cada`));
+                texto(body, 'p', `Subtotal: ${money(p.subtotal)} | Desconto: ${p.percentualDesconto}% (${money(p.valorDesconto)}) | Total: ${money(p.total)}`, 'fw-bold');
+            } else texto(body, 'p', `Pedido legado: ${p.quantidade || 0} × ${p.sabor || p.tipoPizza || 'item antigo'}`);
+            texto(body, 'p', `Entrada: ${data(p.entrada)} | Responsavel: ${p.responsavelEntrada || 'Não informado'}`, 'small');
+            texto(body, 'p', `Saida: ${data(p.saida)} | Responsavel: ${p.responsavelSaida || 'Não informado'}`, 'small');
+            if (p.justificativaCancelamento) texto(body, 'p', `Cancelamento: ${p.justificativaCancelamento}`);
+            if (perfil === 'GERENTE' && p.itens && p.itens.length) {
+                const acoes = document.createElement('div'); acoes.className = 'd-flex flex-wrap gap-2'; body.appendChild(acoes);
+                (transicoes[p.status] || []).forEach(status => botao(acoes, nomeStatus(status), async () => {
+                    await api(`/api/pedidos/${p.id}/status?status=${status}`, 'PUT'); await carregar();
+                }));
+                if (antesSaida.includes(p.status)) {
+                    botao(acoes, 'Desconto', async () => {
+                        const valor = prompt('Percentual de desconto (0 a 20). Substitui o desconto atual:', p.percentualDesconto || '0');
+                        if (valor === null) return;
+                        const percentual = Number(valor.replace(',', '.'));
+                        if (!valor.trim() || !Number.isFinite(percentual)) throw new Error('Informe um percentual valido.');
+                        await api(`/api/pedidos/${p.id}/desconto`, 'POST', {percentual}); await carregar();
+                    });
+                    botao(acoes, 'Cancelar', async () => {
+                        const justificativa = prompt('Informe a justificativa do cancelamento:');
+                        if (justificativa === null) return;
+                        await api(`/api/pedidos/${p.id}/cancelamento`, 'POST', {justificativa}); await carregar();
+                    }, 'btn-outline-danger');
+                }
+            }
+        });
+    }
+    try {
+        if (perfil === 'ATENDENTE') {
+            const [clientes, produtos] = await Promise.all([api('/api/clientes'), api('/api/produtos')]);
+            const select = document.getElementById('cliente');
+            clientes.forEach(c => select.add(new Option(c.nome, c.id)));
+            const ativos = produtos.filter(p => p.ativo);
+            function adicionarItem() {
+                const row = document.createElement('div'); row.className = 'row g-2 mb-3 align-items-end';
+                const produtoCol = document.createElement('label'); produtoCol.className = 'col-md-7'; produtoCol.textContent = 'Produto';
+                const produto = document.createElement('select'); produto.className = 'form-select'; produto.required = true;
+                produto.add(new Option('Selecione', '')); ativos.forEach(p => produto.add(new Option(`${p.nome}: ${money(p.preco)}`, p.id)));
+                produtoCol.appendChild(produto); row.appendChild(produtoCol);
+                const qtdCol = document.createElement('label'); qtdCol.className = 'col-md-3'; qtdCol.textContent = 'Quantidade';
+                const qtd = document.createElement('input'); qtd.type = 'number'; qtd.value = 1; qtd.min = 1; qtd.max = 999; qtd.required = true; qtd.className = 'form-control';
+                qtdCol.appendChild(qtd); row.appendChild(qtdCol);
+                const col = document.createElement('div'); col.className = 'col-md-2'; row.appendChild(col);
+                botao(col, 'Remover', () => row.remove(), 'btn-outline-danger');
+                document.getElementById('itens').appendChild(row);
+            }
+            document.getElementById('adicionar-item').onclick = adicionarItem; adicionarItem();
+            document.getElementById('novo-pedido').onsubmit = async e => {
+                e.preventDefault(); const btn = e.target.querySelector('button[type="submit"]'); btn.disabled = true;
+                try {
+                    const itens = [...document.getElementById('itens').children].map(row => ({produtoId: row.querySelector('select').value, quantidade: Number(row.querySelector('input').value)}));
+                    await api('/api/pedidos','POST',{clienteId: select.value, itens});
+                    document.getElementById('mensagem').hidden = true; await carregar();
+                } catch(error) { mostrarErro(error); } finally { btn.disabled = false; }
+            };
+        }
+        await carregar();
+    } catch(e) { mostrarErro(e); }
+})();
+</script>
+</div>
+</body></html>

@@ -1,0 +1,10 @@
+/target/
+.env
+.env.*
+!.env.example
+.idea/
+*.iml
+*.log
+.local/
+/ROTEIRO_DEMONSTRACAO.md
+/VERIFICACAO.md
