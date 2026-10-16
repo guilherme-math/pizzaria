@@ -19,6 +19,16 @@
     const perfil = /*[[${perfilAtual}]]*/ '';
     const money = value => Number(value || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
     const data = value => value ? new Date(value).toLocaleString('pt-BR', {timeZone: 'America/Sao_Paulo'}) : '—';
+    const nomesStatus = {
+        RECEBIDO: 'Recebido',
+        EM_PREPARACAO: 'Em preparação',
+        PRONTO: 'Pronto',
+        SAIU_PARA_ENTREGA: 'Saiu para entrega',
+        RETIRADO: 'Retirado',
+        FINALIZADO: 'Finalizado',
+        CANCELADO: 'Cancelado'
+    };
+    const nomeStatus = status => nomesStatus[status] || String(status || '').replaceAll('_', ' ');
     const antesSaida = ['RECEBIDO','EM_PREPARACAO','PRONTO'];
     const transicoes = { RECEBIDO: ['EM_PREPARACAO'], EM_PREPARACAO: ['PRONTO'], PRONTO: ['SAIU_PARA_ENTREGA','RETIRADO'], SAIU_PARA_ENTREGA: ['FINALIZADO'], RETIRADO: ['FINALIZADO'] };
     function texto(parent, tag, value, classes) {
@@ -40,7 +50,7 @@
         document.getElementById('vazio').hidden = pedidos.length > 0;
         pedidos.reverse().forEach(p => {
             const card = document.createElement('article'); card.className = 'card mb-3'; lista.appendChild(card);
-            texto(card, 'div', `${p.clienteNome || p.clienteId} — ${p.status}`, 'card-header fw-bold');
+            texto(card, 'div', `${p.clienteNome || p.clienteId} — ${nomeStatus(p.status)}`, 'card-header fw-bold');
             const body = document.createElement('div'); body.className = 'card-body'; card.appendChild(body);
             texto(body, 'p', `Pedido: ${p.id}`, 'small text-muted');
             if (p.itens && p.itens.length) {
@@ -53,7 +63,7 @@
             if (p.justificativaCancelamento) texto(body, 'p', `Cancelamento: ${p.justificativaCancelamento}`);
             if (perfil === 'GERENTE' && p.itens && p.itens.length) {
                 const acoes = document.createElement('div'); acoes.className = 'd-flex flex-wrap gap-2'; body.appendChild(acoes);
-                (transicoes[p.status] || []).forEach(status => botao(acoes, status.replaceAll('_',' '), async () => {
+                (transicoes[p.status] || []).forEach(status => botao(acoes, nomeStatus(status), async () => {
                     await api(`/api/pedidos/${p.id}/status?status=${status}`, 'PUT'); await carregar();
                 }));
                 if (antesSaida.includes(p.status)) {

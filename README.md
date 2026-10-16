@@ -6,7 +6,7 @@ Evolucao individual do sistema de pedidos em Java 21, Spring Boot 3.4.4, Spring 
 
 1. Instale JDK 21 e Git. Abra a pasta que contem `pom.xml` na IDE.
 2. Crie um cluster gratuito MongoDB Atlas, um usuario do banco e autorize seu IP atual.
-3. Execute `Iniciar.cmd`. Na primeira execucao de uma copia nova, informe a URI completa do Atlas com usuario e senha. A URI fica criptografada pelo Windows em `.local/mongodb.xml`, vinculada ao usuario do Windows; `.local/` nao deve ser enviada ao GitHub.
+3. Execute `Iniciar.cmd`. Na primeira execucao de uma copia nova, informe a URI completa do Atlas com usuario e senha. A URI fica criptografada pelo Windows em `.local/mongodb.xml`, vinculada ao usuario do Windows. A pasta `.local/` nao deve ser enviada ao GitHub.
 4. Aguarde a mensagem `Started PizzariaPedidosApplication` e acesse http://localhost:8080.
 5. Pare com Ctrl+C. Para iniciar novamente, execute `Iniciar.cmd`.
 
@@ -24,7 +24,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Iniciar.ps1 -Reconfigu
 
 Alternativa multiplataforma: configure `JAVA_HOME` para JDK 21 e `MONGODB_URI` no ambiente e execute `./mvnw spring-boot:run` (Linux/macOS) ou `.\mvnw.cmd spring-boot:run` (Windows). Nao e necessario Maven ou Tomcat separado. Ao iniciar pela IDE, configure tambem `MONGODB_URI` na configuracao de execucao.
 
-A persistencia de pedidos/clientes e auditoria utiliza transacoes MongoDB. Exige replica set, disponivel no Atlas; um MongoDB local standalone nao atende a esta configuracao.
+A persistencia de pedidos/clientes e auditoria utiliza transacoes MongoDB. Exige replica set, disponivel no Atlas. Um MongoDB local standalone nao atende a esta configuracao.
 
 ## Contas de demonstracao
 
@@ -54,20 +54,20 @@ Sao contas de demonstracao academica. Novos usuarios e novas senhas exigem pelo 
 | Cadastrar / editar / excluir produtos | Sim | Sim | Nao |
 | Consultar auditoria | Sim | Sim | Nao |
 
-Decisoes para operacoes nao detalhadas no enunciado: o GERENTE executa transicoes operacionais; ADMIN e GERENTE mantem o catalogo de produtos; a exclusao de cliente e preservada para ATENDENTE, mas bloqueada se houver pedidos associados. O usuario nao pode excluir sua propria conta nem alterar seu proprio login ou perfil. O perfil e revalidado no banco a cada requisicao para evitar privilegios antigos na sessao.
+Decisoes para operacoes nao detalhadas no enunciado: o GERENTE executa transicoes operacionais. ADMIN e GERENTE mantem o catalogo de produtos. A exclusao de cliente e preservada para ATENDENTE, mas bloqueada se houver pedidos associados. O usuario nao pode excluir sua propria conta nem alterar seu proprio login ou perfil. O perfil e revalidado no banco a cada requisicao para evitar privilegios antigos na sessao.
 
 ## Requisitos implementados
 
 - **RF01:** tres perfis, autenticacao com perfil persistido, autorizacao de paginas e APIs, protecao de servicos sensiveis, CSRF em formularios e chamadas JavaScript, senha omitida dos retornos JSON e do formulario de edicao. Administracao de perfis restrita ao ADMIN.
-- **RF02:** itens com quantidades e precos copiados do catalogo; subtotal, desconto e total calculados em BigDecimal no servidor; identificacao e horario de entrada obtidos da sessao e do relogio do servidor. DTO de entrada nao aceita total, preco unitario, responsavel ou status como fonte de dados.
+- **RF02:** itens com quantidades e precos copiados do catalogo. Subtotal, desconto e total calculados em BigDecimal no servidor. Identificacao e horario de entrada obtidos da sessao e do relogio do servidor. DTO de entrada nao aceita total, preco unitario, responsavel ou status como fonte de dados.
 - **RF03:** fluxo RECEBIDO -> EM_PREPARACAO -> PRONTO -> SAIU_PARA_ENTREGA ou RETIRADO -> FINALIZADO. Saida grava horario e responsavel. Transicoes invalidas e alteracoes de pedidos cancelados sao rejeitadas.
 - **RF04:** somente GERENTE aplica desconto de 0 a 20%, com ate duas casas decimais, ou cancela mediante justificativa. Permitido somente em RECEBIDO, EM_PREPARACAO ou PRONTO. Novo desconto substitui o anterior, sem acumular. Cancelamento preserva dados.
-- **RF05:** inclusoes/alteracoes de pedidos e clientes, status, descontos, cancelamentos e exclusao de cliente sao auditados em `auditorias`, com usuario, perfil, horario UTC, entidade/ID, campos anteriores/novos e justificativa. Consulta paginada para ADMIN/GERENTE. Nao ha endpoints de edicao ou exclusao de auditoria; repositorio de consulta nao expoe escrita. Snapshots aceitam apenas Pedido/Cliente, sem credenciais. Dados cadastrais completos sao limitados aos perfis autorizados.
+- **RF05:** inclusoes/alteracoes de pedidos e clientes, status, descontos, cancelamentos e exclusao de cliente sao auditados em `auditorias`, com usuario, perfil, horario UTC, entidade/ID, campos anteriores/novos e justificativa. Consulta paginada para ADMIN/GERENTE. Nao ha endpoints de edicao ou exclusao de auditoria. Repositorio de consulta nao expoe escrita. Snapshots aceitam apenas Pedido/Cliente, sem credenciais. Dados cadastrais completos sao limitados aos perfis autorizados.
 - **Integridade:** alteracao de pedido/cliente e auditoria na mesma transacao. Controle otimista de versao evita sobrescrever mudancas concorrentes. Em conflito, atualize os dados antes de repetir a operacao.
 
 Datas sao armazenadas como instantes UTC e exibidas na interface no fuso America/Sao_Paulo.
 
-Pedidos antigos permanecem consultaveis com seus campos legados. Pedidos com estados fora do fluxo novo nao sao convertidos automaticamente; use novos pedidos para demonstrar as novas regras.
+Pedidos antigos permanecem consultaveis com seus campos legados. Pedidos com estados fora do fluxo novo nao sao convertidos automaticamente. Use novos pedidos para demonstrar as novas regras.
 
 ## Estrutura das principais alteracoes
 
@@ -95,7 +95,7 @@ Veja `ROTEIRO_DEMONSTRACAO.md` para testar no navegador e gravar o video. Veja `
 
 ## Principais APIs
 
-Todas exigem sessao autenticada; alteracoes exigem token CSRF. Para APIs de escrita, use JSON com Content-Type application/json.
+Todas exigem sessao autenticada. Alteracoes exigem token CSRF. Para APIs de escrita, use JSON com Content-Type application/json.
 
 | Metodo e rota | Uso |
 |---|---|
@@ -117,7 +117,3 @@ Todas exigem sessao autenticada; alteracoes exigem token CSRF. Para APIs de escr
 | POST /api/pedidos/{id}/desconto | Aplicar: {"percentual":10} |
 | POST /api/pedidos/{id}/cancelamento | Cancelar: {"justificativa":"Cliente desistiu"} |
 | GET /api/auditoria?pagina=0 | Consultar eventos paginados |
-
-## Entrega individual
-
-Entregar o repositorio GitHub com este README e o video da execucao individual. Incluir o link do video na entrega ou neste README quando estiver disponivel. Conferir que o professor tem acesso a ambos. Nao enviar `.local/`, conexoes, logs ou `target/`.

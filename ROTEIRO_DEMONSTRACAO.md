@@ -1,6 +1,6 @@
 # Roteiro de verificacao e video
 
-Execute Iniciar.cmd, aguarde o servidor e abra http://localhost:8080. Use o botao Sair para alternar perfis; nao inicie duas instancias na porta 8080.
+Execute Iniciar.cmd, aguarde o servidor e abra http://localhost:8080. Use o botao Sair para alternar perfis. Nao inicie duas instancias na porta 8080.
 
 ## 1 Autenticacao e cadastro
 
@@ -9,7 +9,7 @@ Execute Iniciar.cmd, aguarde o servidor e abra http://localhost:8080. Use o bota
 3. Abra Produtos. Cadastre Pizza Calabresa, tipo Pizza, preco 50,00, ativo.
 4. Saia e entre como atendente / Atendente123.
 5. Abra Clientes e cadastre Cliente Demonstracao com telefone e endereco ficticios.
-6. Edite o telefone e o logradouro; anote os valores anterior e novo.
+6. Edite o telefone e o logradouro. Anote os valores anterior e novo.
 
 ## 2 Pedido e calculo
 
@@ -56,7 +56,7 @@ Ambos devem retornar 403. O ADMIN nao e superusuario das operacoes exclusivas do
 api('/api/pedidos/ID_DO_PEDIDO/status?status=FINALIZADO', 'PUT').catch(e => console.log(e.message))
 ```
 
-7. Em pedido cancelado, tente alteracao de status; em pedido que ja saiu, tente desconto ou cancelamento. Devem ser rejeitados pelo servidor, mesmo que os botoes nao estejam visiveis.
+7. Em pedido cancelado, tente alteracao de status. Em pedido que ja saiu, tente desconto ou cancelamento. Devem ser rejeitados pelo servidor, mesmo que os botoes nao estejam visiveis.
 
 ## 5 Auditoria
 
