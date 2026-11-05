@@ -17,7 +17,7 @@ Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.166 s -- in co
 com.umc.pediupatrao.TelasTest
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.760 s -- in com.umc.pediupatrao.TelasTest
 
-TOTAL: 50 testes, 0 falhas, 0 erros, 0 ignorados.
+TOTAL: 59 testes, 0 falhas, 0 erros, 0 ignorados.
 Sintaxe JavaScript: node --check src/main/resources/static/js/dashboard.js, exit code 0.
 
 Verificacao visual: pagina Thymeleaf e resposta JSON geradas pelos testes com servico real e repositorios simulados.
@@ -47,3 +47,11 @@ Arquivos de teste:
 src/test/java/com/umc/pediupatrao/DashboardServiceTest.java
 src/test/java/com/umc/pediupatrao/DashboardApiTest.java
 Demais testes da atividade anterior permaneceram passando.
+
+Correcao do feedback da atividade anterior: inicializacao segura sem senhas padrao.
+DataInitializerTest: 9 testes, 0 falhas, 0 erros, 0 ignorados.
+Banco vazio sem configuracao falha sem criar conta. Banco com ADMIN nao redefine senha nem cria usuarios de demonstracao.
+Senha inicial configurada e salva como hash BCrypt. Rejeita senha curta, excesso de bytes, login invalido e colisao com conta existente.
+Migracao USER nao concede ADMIN pelo nome do login.
+Iniciar.ps1: sintaxe validada pelo parser PowerShell. Entrada de senha oculta, sem persistencia em arquivo.
+Os hashes de contas antigas no Atlas nao foram redefinidos. A troca dessas senhas deve ser realizada pelo administrador na tela Usuarios.

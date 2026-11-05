@@ -26,18 +26,23 @@ Alternativa multiplataforma: configure `JAVA_HOME` para JDK 21 e `MONGODB_URI` n
 
 A persistencia de pedidos/clientes e auditoria utiliza transacoes MongoDB. Exige replica set, disponivel no Atlas. Um MongoDB local standalone nao atende a esta configuracao.
 
-## Contas de demonstracao
+## Primeiro acesso sem senhas padrao
 
-Criadas somente quando ausentes. Senhas existentes nao sao redefinidas no reinicio.
+O projeto nao cria contas de demonstracao nem possui senhas iniciais fixas. Em um banco sem ADMIN, forneca o login e uma senha exclusiva por variaveis de ambiente apenas para a primeira inicializacao. A senha inicial exige pelo menos 12 caracteres e no maximo 72 bytes UTF-8. O login aceita de 3 a 80 letras, numeros, pontos, hifens ou sublinhados.
 
-| Usuario | Senha inicial | Perfil |
-|---|---|---|
-| admin | teste123 | ADMIN |
-| gerente | Gerente123 | GERENTE |
-| atendente | Atendente123 | ATENDENTE |
+No Windows, use a entrada oculta do iniciador:
 
-Sao contas de demonstracao academica. Novos usuarios e novas senhas exigem pelo menos oito caracteres. O login admin original foi preservado para compatibilidade.
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Iniciar.ps1 -CriarAdministrador
+```
 
+O script pergunta login e senha, passa a configuracao ao processo Java e nao grava a senha inicial em arquivo. Depois que o administrador existir, inicie normalmente com `Iniciar.cmd`. Cadastre GERENTE e ATENDENTE pela tela Usuarios, escolhendo senhas individuais.
+
+Em outros ambientes, injete `BOOTSTRAP_ADMIN_USERNAME` e `BOOTSTRAP_ADMIN_PASSWORD` pelo gerenciador de segredos ou ambiente de execucao, junto de `MONGODB_URI`. Nao escreva os valores no repositorio, no README, em argumentos de linha de comando ou em logs. Retire as variaveis de bootstrap apos o primeiro cadastro.
+
+Se ja houver um ADMIN, a configuracao de bootstrap e ignorada. Nenhuma senha e redefinida no reinicio. Se o login informado ja pertencer a outra conta, o bootstrap e recusado, sem promover o usuario existente.
+
+**Bancos da versao anterior:** remover as senhas fixas do codigo nao troca os hashes ja salvos. Entre como ADMIN e altere, pela tela Usuarios, as senhas das antigas contas de demonstracao, usando valores exclusivos. Nao e necessario apagar clientes, pedidos ou auditorias. A migracao de perfis USER passa a ATENDENTE e nunca concede ADMIN apenas pelo nome do login.
 ## Permissoes
 
 | Operacao | ADMIN | GERENTE | ATENDENTE |

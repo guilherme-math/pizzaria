@@ -239,3 +239,11 @@ Os testes não comprovam por si só persistência e renderização no navegador 
 | 2:40 a 3:00 | Documento de requisitos, testes e branch feature no GitHub. Explicar preservação de histórico e concluir |
 
 Gravar a execução real com dados do projeto. O vídeo final deve ser disponibilizado no GitHub por link no README ou outro formato aceito pelo professor. Este documento não substitui a gravação individual.
+
+## Correcao do feedback de seguranca da M1
+
+A inicializacao deixou de criar usuarios com senhas padronizadas no codigo. O primeiro ADMIN de um banco novo exige BOOTSTRAP_ADMIN_USERNAME e BOOTSTRAP_ADMIN_PASSWORD, sem valores padrao. O iniciador Windows pode receber esses valores por entrada oculta com -CriarAdministrador. A senha nao e salva em arquivo e e persistida no banco apenas como hash BCrypt.
+
+Quando ja existe ADMIN, o bootstrap nao altera contas. Credenciais de GERENTE e ATENDENTE sao definidas pelo administrador na tela Usuarios. Um login existente nao pode ser promovido pelo bootstrap. As senhas antigas do banco devem ser trocadas pela interface, pois remover senhas do codigo nao modifica os hashes armazenados.
+
+O teste DataInitializerTest cobre nove cenarios desta correcao. A compilacao completa passou com 59 testes. As instrucoes de primeiro acesso estao no README.
