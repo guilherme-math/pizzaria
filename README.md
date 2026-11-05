@@ -116,3 +116,15 @@ Todas exigem sessao autenticada. Alteracoes exigem token CSRF. Para APIs de escr
 | POST /api/pedidos/{id}/desconto | Aplicar: {"percentual":10} |
 | POST /api/pedidos/{id}/cancelamento | Cancelar: {"justificativa":"Cliente desistiu"} |
 | GET /api/auditoria?pagina=0 | Consultar eventos paginados |
+
+## Dashboard administrativo M2
+
+A nova atividade adiciona um painel em `/dashboard`, disponível para ADMIN e GERENTE. O menu Dashboard aparece após o login. Ele consome uma API própria, com indicadores, gráficos por período/horário/região, situação dos pedidos, ranking de produtos e clientes, filtros compartilhados, atualização automática e custos diários.
+
+A documentação de requisitos funcionais e não funcionais, decisões de análise, endpoints, parâmetros, exemplos e evidências está em [docs/DASHBOARD.md](docs/DASHBOARD.md).
+
+Faturamento e ticket médio consideram somente pedidos finalizados, depois dos descontos. O período usa a entrada do pedido no horário de São Paulo. Sem custos de todos os dias, o resultado operacional fica indisponível. Não são apresentados custos estimados como se fossem reais.
+
+Execução: mantenha o MongoDB Atlas configurado e use `Iniciar.cmd`. Acesse http://localhost:8080/dashboard após o login. Para testar: `.\mvnw.cmd test`. As bibliotecas AdminLTE e Chart.js do painel já estão em `src/main/resources/static`.
+
+A apresentação individual da M2 deve ter até três minutos. O link do vídeo será incluído após a gravação.

@@ -12,6 +12,7 @@
             <li class="nav-item"><a class="nav-link" href="/produtos">Produtos</a></li>
             <li class="nav-item" th:if="${perfilAtual == 'ADMIN'}"><a class="nav-link" href="/usuarios">Usuarios</a></li>
             <li class="nav-item" th:if="${perfilAtual == 'ADMIN' or perfilAtual == 'GERENTE'}"><a class="nav-link" href="/auditoria">Auditoria</a></li>
+            <li class="nav-item" th:if="${perfilAtual == 'ADMIN' or perfilAtual == 'GERENTE'}"><a class="nav-link" href="/dashboard">Dashboard</a></li>
         </ul>
         <form th:action="@{/logout}" method="post" class="m-3">
             <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>
@@ -20,4 +21,3 @@
 </div>
 </body>
 </html>
-
