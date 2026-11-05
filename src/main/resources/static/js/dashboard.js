@@ -116,7 +116,7 @@
             if(atual!==sequencia)return;
             $('erro').textContent=e.name==='AbortError'?'A consulta demorou mais que o esperado. Verifique a conexão e tente novamente.':e.message;
             $('erro').hidden=false;$('resultado').setAttribute('data-desatualizado','true');
-            $('atualizado').textContent='Falha na atualização. Os dados anteriores podem estar desatualizados.';
+            $('atualizado').textContent=ultimosDados ? 'Falha na atualização. Os dados anteriores podem estar desatualizados.' : 'Dados ainda não carregados.';
         } finally {
             clearTimeout(limite);
             if(atual===sequencia){$('carregando').hidden=true;$('resultado').setAttribute('aria-busy','false');$('consultar').disabled=false;}

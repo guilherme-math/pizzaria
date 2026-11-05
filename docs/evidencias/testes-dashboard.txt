@@ -17,7 +17,7 @@ Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.166 s -- in co
 com.umc.pediupatrao.TelasTest
 Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.760 s -- in com.umc.pediupatrao.TelasTest
 
-TOTAL: 59 testes, 0 falhas, 0 erros, 0 ignorados.
+TOTAL: 60 testes, 0 falhas, 0 erros, 0 ignorados.
 Sintaxe JavaScript: node --check src/main/resources/static/js/dashboard.js, exit code 0.
 
 Verificacao visual: pagina Thymeleaf e resposta JSON geradas pelos testes com servico real e repositorios simulados.
@@ -55,3 +55,5 @@ Senha inicial configurada e salva como hash BCrypt. Rejeita senha curta, excesso
 Migracao USER nao concede ADMIN pelo nome do login.
 Iniciar.ps1: sintaxe validada pelo parser PowerShell. Entrada de senha oculta, sem persistencia em arquivo.
 Os hashes de contas antigas no Atlas nao foram redefinidos. A troca dessas senhas deve ser realizada pelo administrador na tela Usuarios.
+
+DashboardMongoQueryTest: 1 teste passou. O Spring Data montou os limites do intervalo em um unico campo BSON para pedidos e custos, com tipos e ordenacao verificados. Suite completa: 60 testes passaram. O painel permanece visivel no layout comum durante falhas de consulta, sem simular valores zerados.
