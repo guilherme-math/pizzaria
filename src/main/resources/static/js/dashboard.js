@@ -111,7 +111,7 @@
         try {
             const dados=await request('/api/dashboard?'+query,{signal:controle.signal});
             if(atual!==sequencia)return;
-            render(dados);aplicados=query;$('resultado').removeAttribute('data-desatualizado');
+            $('resultado').hidden=false;render(dados);aplicados=query;$('resultado').removeAttribute('data-desatualizado');
         } catch(e) {
             if(atual!==sequencia)return;
             $('erro').textContent=e.name==='AbortError'?'A consulta demorou mais que o esperado. Verifique a conexão e tente novamente.':e.message;

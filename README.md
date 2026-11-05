@@ -130,6 +130,6 @@ A documentação de requisitos funcionais e não funcionais, decisões de análi
 
 Faturamento e ticket médio consideram somente pedidos finalizados, depois dos descontos. O período usa a entrada do pedido no horário de São Paulo. Sem custos de todos os dias, o resultado operacional fica indisponível. Não são apresentados custos estimados como se fossem reais.
 
-Execução: mantenha o MongoDB Atlas configurado e use `Iniciar.cmd`. Acesse http://localhost:8080/dashboard após o login. Para testar: `.\mvnw.cmd test`. As bibliotecas AdminLTE e Chart.js do painel já estão em `src/main/resources/static`.
+Execução: mantenha o MongoDB Atlas configurado e use `Iniciar.cmd`. Acesse http://localhost:8080/dashboard após o login. Para testar: `.\mvnw.cmd test`. O painel reutiliza o layout e a navegação do sistema. Chart.js é servido localmente.
 
 A apresentação individual da M2 deve ter até três minutos. O link do vídeo será incluído após a gravação.

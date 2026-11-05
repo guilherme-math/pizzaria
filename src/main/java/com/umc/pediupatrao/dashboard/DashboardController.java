@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.*;
 public class DashboardController {
     private final DashboardService service;
     public DashboardController(DashboardService service) { this.service = service; }
-    @GetMapping("/dashboard") public String tela() { return "dashboard"; }
+    @GetMapping("/dashboard") public String tela(org.springframework.ui.Model model) {
+        model.addAttribute("content", "dashboard :: content");
+        model.addAttribute("paginaDashboard", true);
+        return "layout";
+    }
     @GetMapping("/api/dashboard") @ResponseBody
     public DashboardResumo consultar(@ModelAttribute DashboardFiltro filtro) { return service.consultar(filtro); }
     @GetMapping("/api/dashboard/opcoes") @ResponseBody

@@ -44,7 +44,7 @@ class DashboardApiTest {
     @Test void adminEGerenteAcessamTelaEApiComDadosReaisDoServico() throws Exception {
         for(String role:List.of("ADMIN","GERENTE")) {
             mvc.perform(get("/dashboard").with(user("u").roles(role))).andExpect(status().isOk())
-                .andExpect(content().string(containsString("/dist/css/adminlte.min.css")))
+                .andExpect(content().string(containsString("/css/style.css")))
                 .andExpect(content().string(containsString("/js/dashboard.js")))
                 .andExpect(content().string(containsString("name=\"_csrf\"")));
             mvc.perform(get("/api/dashboard?inicio=2026-11-05&fim=2026-11-05").with(user("u").roles(role))).andExpect(status().isOk())

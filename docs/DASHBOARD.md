@@ -2,7 +2,7 @@
 
 ## Objetivo e escopo
 
-O painel acompanha vendas e pedidos com dados fornecidos por uma API Spring Boot integrada ao MongoDB. A solução mantém Java 21, Spring Security, Thymeleaf e a arquitetura do projeto anterior. A tela usa AdminLTE 3 e Chart.js 2.9.4 já distribuídos no projeto, sem depender de CDN para seus estilos, scripts ou gráficos.
+O painel acompanha vendas e pedidos com dados fornecidos por uma API Spring Boot integrada ao MongoDB. A solução mantém Java 21, Spring Security, Thymeleaf e a arquitetura do projeto anterior. O painel usa o mesmo layout e Bootstrap das demais páginas. Os gráficos usam Chart.js 2.9.4, servido localmente.
 
 O painel fica em `/dashboard`. O serviço de pedidos não foi substituído. A nova API está em `/api/dashboard` e tem acesso restrito a ADMIN e GERENTE. O ATENDENTE mantém suas responsabilidades anteriores e não acessa indicadores administrativos.
 
@@ -88,7 +88,7 @@ flowchart LR
     Pedido --> Analise[DashboardService]
     Custo[CustoDiario no MongoDB] --> Analise
     Analise --> API[DashboardController JSON]
-    API --> Tela[AdminLTE e Chart.js]
+    API --> Tela[Layout compartilhado e Chart.js]
 ```
 
 - `Pedido.regiaoVenda`: novo campo opcional. Pedidos anteriores continuam legíveis.
