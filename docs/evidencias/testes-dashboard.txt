@@ -1,0 +1,57 @@
+EVIDENCIAS DE TESTE DO DASHBOARD ADMINISTRATIVO
+Execucao local em 05/11/2026, fuso America/Sao_Paulo
+
+Comando: .\mvnw.cmd -q package
+Resultado: exit code 0, JAR gerado e testes concluidos.
+
+com.umc.pediupatrao.AuditoriaServiceTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.597 s -- in com.umc.pediupatrao.AuditoriaServiceTest
+com.umc.pediupatrao.DashboardApiTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.687 s -- in com.umc.pediupatrao.DashboardApiTest
+com.umc.pediupatrao.DashboardServiceTest
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.082 s -- in com.umc.pediupatrao.DashboardServiceTest
+com.umc.pediupatrao.PedidoServiceTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.122 s -- in com.umc.pediupatrao.PedidoServiceTest
+com.umc.pediupatrao.SecurityAccessTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.166 s -- in com.umc.pediupatrao.SecurityAccessTest
+com.umc.pediupatrao.TelasTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.760 s -- in com.umc.pediupatrao.TelasTest
+
+TOTAL: 59 testes, 0 falhas, 0 erros, 0 ignorados.
+Sintaxe JavaScript: node --check src/main/resources/static/js/dashboard.js, exit code 0.
+
+Verificacao visual: pagina Thymeleaf e resposta JSON geradas pelos testes com servico real e repositorios simulados.
+Previa local conferida no navegador: indicadores, filtros, graficos Chart.js, estados dos pedidos, rankings e custos sem preenchimento.
+Dados de teste: pedido finalizado de R$ 90,00, dois itens de R$ 50,00 e nenhum custo informado. Nenhum dado ficticio inserido no Atlas.
+
+Limite de verificacao real: tentativa de iniciar o servidor Java com Atlas encontrou Failed looking up TXT record / Channel selector configuration error / Unable to establish loopback connection no ambiente de ferramentas.
+Pendente: executar a versao nova pelo IntelliJ ou Iniciar.cmd e validar filtros, custos e atualizacao no banco real. A previa visual nao equivale a esse teste completo.
+
+Contratos HTTP comprovados nos testes:
+200: ADMIN e GERENTE consultam API e pagina, resposta agregada do servico, custo valido persiste no repositorio.
+302: requisicao sem sessao e redirecionada para login.
+400: datas/horas invalidas, periodo invertido, agrupamento/status invalidos e custos invalidos.
+403: ATENDENTE bloqueado no painel, opcoes e escrita de custos. Escrita sem CSRF bloqueada.
+503: falha simulada do repositorio retorna mensagem generica sem detalhes internos.
+
+Cenarios de calculo comprovados:
+Pedidos cancelados e nao finalizados nao entram no financeiro. Total liquido e ticket medio corretos.
+Preenchimento com zero sem vendas e sem divisao por zero.
+Recorte do banco no fuso de Sao Paulo, meia-noite local e faixa noturna.
+Limite de horario final exclusivo. Filtros combinados e agrupamento mensal.
+Regiao historica preservada e fallback legado com aviso.
+Custos incompletos sem resultado inventado. Custos completos com resultado e bloqueio de comparacao segmentada.
+Custos negativos e precisao invalida recusados. Custo zero explicito aceito com usuario e horario.
+
+Arquivos de teste:
+src/test/java/com/umc/pediupatrao/DashboardServiceTest.java
+src/test/java/com/umc/pediupatrao/DashboardApiTest.java
+Demais testes da atividade anterior permaneceram passando.
+
+Correcao do feedback da atividade anterior: inicializacao segura sem senhas padrao.
+DataInitializerTest: 9 testes, 0 falhas, 0 erros, 0 ignorados.
+Banco vazio sem configuracao falha sem criar conta. Banco com ADMIN nao redefine senha nem cria usuarios de demonstracao.
+Senha inicial configurada e salva como hash BCrypt. Rejeita senha curta, excesso de bytes, login invalido e colisao com conta existente.
+Migracao USER nao concede ADMIN pelo nome do login.
+Iniciar.ps1: sintaxe validada pelo parser PowerShell. Entrada de senha oculta, sem persistencia em arquivo.
+Os hashes de contas antigas no Atlas nao foram redefinidos. A troca dessas senhas deve ser realizada pelo administrador na tela Usuarios.

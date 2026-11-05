@@ -28,6 +28,9 @@ public class MongoInitConfig implements CommandLineRunner {
         if (!mongoTemplate.collectionExists("produtos")) {
             mongoTemplate.createCollection("produtos");
         }
+        if (!mongoTemplate.collectionExists("custos_diarios")) mongoTemplate.createCollection("custos_diarios");
+        mongoTemplate.indexOps("pedidos").ensureIndex(new org.springframework.data.mongodb.core.index.Index()
+            .on("entrada", org.springframework.data.domain.Sort.Direction.ASC));
         // Documentos legados precisam de versao inicial para atualizacoes com @Version.
         for (String colecao : new String[]{"clientes", "pedidos"}) {
             mongoTemplate.updateMulti(
@@ -40,5 +43,3 @@ public class MongoInitConfig implements CommandLineRunner {
         }
     }
 }
-
-

@@ -33,6 +33,7 @@ public class PedidoService {
         exigir(entrada.itens() != null && !entrada.itens().isEmpty() && entrada.itens().size() <= 100, "Informe de 1 a 100 itens");
         Pedido pedido = new Pedido();
         pedido.setClienteId(cliente.getId()); pedido.setClienteNome(cliente.getNome());
+        pedido.setRegiaoVenda(com.umc.pediupatrao.dashboard.DashboardService.regiao(cliente));
         List<ItemPedido> itens = new ArrayList<>();
         BigDecimal subtotal = BigDecimal.ZERO;
         for (CriarPedido.Item item : entrada.itens()) {

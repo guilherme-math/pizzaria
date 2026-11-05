@@ -23,6 +23,12 @@ public class ErroAdvice {
     public Object banco(DataAccessException erro, HttpServletRequest request) {
         return resposta(503, "Nao foi possivel concluir a operacao no banco. Atualize a pagina e confira os dados antes de tentar novamente.", request);
     }
+    @ExceptionHandler({org.springframework.validation.BindException.class,
+        org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+        org.springframework.http.converter.HttpMessageNotReadableException.class})
+    public Object entradaInvalida(Exception erro, HttpServletRequest request) {
+        return resposta(400, "Parametros invalidos. Use datas AAAA-MM-DD, horarios HH:mm e valores numericos validos.", request);
+    }
     private Object resposta(int status, String mensagem, HttpServletRequest request) {
         if (request.getRequestURI().startsWith("/api/")) {
             return ResponseEntity.status(status).body(Map.of("message", mensagem == null ? "Operacao rejeitada" : mensagem));
