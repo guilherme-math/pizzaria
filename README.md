@@ -1,12 +1,33 @@
-# PediuPatrao: Pratica M1 Parte 2
+# Pediu Patrão
 
-Evolucao individual do sistema de pedidos em Java 21, Spring Boot 3.4.4, Spring Security, Thymeleaf e MongoDB Atlas. A arquitetura original de entidades, repositorios, servicos e controladores foi preservada.
+Sistema de pedidos com dashboard administrativo, desenvolvido em Java 21, Spring Boot 3.4.4, Spring Security, Thymeleaf e MongoDB Atlas. A aplicação reúne cadastro de clientes e produtos, fluxo de pedidos, permissões por perfil, auditoria e análise de vendas.
+
+## Dashboard administrativo M2
+
+Acesse `/dashboard` após entrar como ADMIN ou GERENTE. O painel usa o mesmo layout e menu das demais telas e consome sua própria API. Os gráficos usam Chart.js local. Bootstrap e ícones seguem as dependências da interface existente.
+
+O painel apresenta faturamento líquido, ticket médio, pedidos, clientes atendidos, situação dos pedidos, vendas por período, horário e região, produtos mais vendidos, vendas por cliente e custos operacionais diários. Os filtros permitem período, faixa de horário, região, cliente, situação e agrupamento por dia ou mês. Há atualização manual e automática a cada 60 segundos.
+
+Faturamento e ticket médio consideram pedidos finalizados após descontos. O período usa a entrada do pedido no horário de São Paulo. Custos são informados por dia. Sem todos os dias preenchidos, ou com um recorte segmentado, o resultado operacional fica indisponível.
+
+- [Requisitos, decisões de projeto e contratos da API](docs/DASHBOARD.md)
+- [Evidências dos testes automatizados](docs/evidencias/testes-dashboard.txt)
+- [Registro da validação manual](docs/evidencias/validacao-manual.md)
+- [Exemplo de resposta gerada com dados de teste](docs/evidencias/resposta-api-dados-de-teste.json)
+
+## Apresentação M2
+
+Vídeo demonstrativo de até três minutos: aguardando a gravação. O link será adicionado aqui após o envio e a conferência do acesso.
+
+## Versão e branches
+
+A implementação da API e do dashboard está na branch `feature/dashboard-administrativo`, com integração prevista pelo PR para `develop` e depois para `main`. A branch feature será mantida para identificar o trabalho desta atividade. Enquanto a integração não for concluída, consulte essa branch para executar a versão M2.
 
 ## Executar no Windows
 
 1. Instale JDK 21 e Git. Abra a pasta que contem `pom.xml` na IDE.
 2. Crie um cluster gratuito MongoDB Atlas, um usuario do banco e autorize seu IP atual.
-3. Execute `Iniciar.cmd`. Na primeira execucao de uma copia nova, informe a URI completa do Atlas com usuario e senha. A URI fica criptografada pelo Windows em `.local/mongodb.xml`, vinculada ao usuario do Windows. A pasta `.local/` nao deve ser enviada ao GitHub.
+3. Se o banco já possui um ADMIN, execute `Iniciar.cmd`. Para banco novo, use o comando com `-CriarAdministrador` da seção de primeiro acesso. Na primeira execucao de uma copia nova, informe a URI completa do Atlas com usuario e senha. A URI fica criptografada pelo Windows em `.local/mongodb.xml`, vinculada ao usuario do Windows. A pasta `.local/` nao deve ser enviada ao GitHub.
 4. Aguarde a mensagem `Started PizzariaPedidosApplication` e acesse http://localhost:8080.
 5. Pare com Ctrl+C. Para iniciar novamente, execute `Iniciar.cmd`.
 
@@ -43,7 +64,8 @@ Em outros ambientes, injete `BOOTSTRAP_ADMIN_USERNAME` e `BOOTSTRAP_ADMIN_PASSWO
 Se ja houver um ADMIN, a configuracao de bootstrap e ignorada. Nenhuma senha e redefinida no reinicio. Se o login informado ja pertencer a outra conta, o bootstrap e recusado, sem promover o usuario existente.
 
 **Bancos da versao anterior:** remover as senhas fixas do codigo nao troca os hashes ja salvos. Entre como ADMIN e altere, pela tela Usuarios, as senhas das antigas contas de demonstracao, usando valores exclusivos. Nao e necessario apagar clientes, pedidos ou auditorias. A migracao de perfis USER passa a ATENDENTE e nunca concede ADMIN apenas pelo nome do login.
-## Permissoes
+
+## Permissões
 
 | Operacao | ADMIN | GERENTE | ATENDENTE |
 |---|---|---|---|
@@ -58,10 +80,12 @@ Se ja houver um ADMIN, a configuracao de bootstrap e ignorada. Nenhuma senha e r
 | Consultar produtos | Sim | Sim | Sim |
 | Cadastrar / editar / excluir produtos | Sim | Sim | Nao |
 | Consultar auditoria | Sim | Sim | Nao |
+| Consultar dashboard e indicadores | Sim | Sim | Nao |
+| Informar custos operacionais diarios | Sim | Sim | Nao |
 
 Decisoes para operacoes nao detalhadas no enunciado: o GERENTE executa transicoes operacionais. ADMIN e GERENTE mantem o catalogo de produtos. A exclusao de cliente e preservada para ATENDENTE, mas bloqueada se houver pedidos associados. O usuario nao pode excluir sua propria conta nem alterar seu proprio login ou perfil. O perfil e revalidado no banco a cada requisicao para evitar privilegios antigos na sessao.
 
-## Requisitos implementados
+## Funcionalidades do sistema de pedidos M1
 
 - **RF01:** tres perfis, autenticacao com perfil persistido, autorizacao de paginas e APIs, protecao de servicos sensiveis, CSRF em formularios e chamadas JavaScript, senha omitida dos retornos JSON e do formulario de edicao. Administracao de perfis restrita ao ADMIN.
 - **RF02:** itens com quantidades e precos copiados do catalogo. Subtotal, desconto e total calculados em BigDecimal no servidor. Identificacao e horario de entrada obtidos da sessao e do relogio do servidor. DTO de entrada nao aceita total, preco unitario, responsavel ou status como fonte de dados.
@@ -83,7 +107,9 @@ Pedidos antigos permanecem consultaveis com seus campos legados. Pedidos com est
 - `service/PedidoService`: calculos, transicoes, descontos e cancelamentos.
 - `service/ClienteService` e `AuditoriaService`: alteracoes cadastrais e eventos persistentes.
 - `controller/AuditoriaController` e `ErroAdvice`: consulta restrita e mensagens de erro.
-- Templates de usuarios, clientes, produtos, pedidos e auditoria: operacoes e navegacao por perfil.
+- Templates de usuários, clientes, produtos, pedidos, auditoria e dashboard: operações e navegação no mesmo layout.
+- Pacote `dashboard`: controller, filtros, DTOs, serviço analítico e repositório de custos.
+- `dashboard.js` e `dashboard.css`: consumo da API, gráficos e ajustes visuais do painel.
 
 ## Testes
 
@@ -97,7 +123,7 @@ Com JDK 21 configurado:
 Os testes nao exigem Atlas: usam repositorios simulados e Spring MVC com filtros reais de seguranca. Cobrem calculos, regras, auditoria, bloqueios com CSRF valido, revogacao de perfil na sessao, omissao de senha e renderizacao das telas Thymeleaf. Nao substituem a verificacao da persistencia real no Atlas.
 
 
-## Principais APIs
+## APIs do sistema de pedidos M1
 
 Todas exigem sessao autenticada. Alteracoes exigem token CSRF. Para APIs de escrita, use JSON com Content-Type application/json.
 
@@ -121,15 +147,3 @@ Todas exigem sessao autenticada. Alteracoes exigem token CSRF. Para APIs de escr
 | POST /api/pedidos/{id}/desconto | Aplicar: {"percentual":10} |
 | POST /api/pedidos/{id}/cancelamento | Cancelar: {"justificativa":"Cliente desistiu"} |
 | GET /api/auditoria?pagina=0 | Consultar eventos paginados |
-
-## Dashboard administrativo M2
-
-A nova atividade adiciona um painel em `/dashboard`, disponível para ADMIN e GERENTE. O menu Dashboard aparece após o login. Ele consome uma API própria, com indicadores, gráficos por período/horário/região, situação dos pedidos, ranking de produtos e clientes, filtros compartilhados, atualização automática e custos diários.
-
-A documentação de requisitos funcionais e não funcionais, decisões de análise, endpoints, parâmetros, exemplos e evidências está em [docs/DASHBOARD.md](docs/DASHBOARD.md).
-
-Faturamento e ticket médio consideram somente pedidos finalizados, depois dos descontos. O período usa a entrada do pedido no horário de São Paulo. Sem custos de todos os dias, o resultado operacional fica indisponível. Não são apresentados custos estimados como se fossem reais.
-
-Execução: mantenha o MongoDB Atlas configurado e use `Iniciar.cmd`. Acesse http://localhost:8080/dashboard após o login. Para testar: `.\mvnw.cmd test`. O painel reutiliza o layout e a navegação do sistema. Chart.js é servido localmente.
-
-A apresentação individual da M2 deve ter até três minutos. O link do vídeo será incluído após a gravação.

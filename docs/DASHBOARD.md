@@ -32,7 +32,7 @@ O painel fica em `/dashboard`. O serviço de pedidos não foi substituído. A no
 | RNF05 | Desempenho | Índice em entrada, consulta limitada a até 366 dias e sem consulta de cliente para cada pedido. Agregações em memória adequadas à atividade, com necessidade futura de pipeline MongoDB em maior escala |
 | RNF06 | Confiabilidade | Dados antigos incompletos geram avisos. Não inventar custos ou resultado. Erro de atualização não deve apresentar dados antigos como atuais |
 | RNF07 | Manutenção | Controller HTTP, DTOs de resposta, serviço de análise e repositórios separados. Testes automatizados para regras e contratos |
-| RNF08 | Reprodutibilidade | Maven Wrapper, scripts de execução e documentação no repositório. Dependências de frontend locais |
+| RNF08 | Reprodutibilidade | Maven Wrapper, scripts de execução e documentação no repositório. Chart.js local e layout compartilhado com as dependências do sistema |
 | RNF09 | Privacidade | Ranking usa somente identificação e nome do cliente. Telefone, logradouro e credenciais não são expostos no dashboard |
 
 ## Decisões de análise e projeto
@@ -76,7 +76,7 @@ Custos são gerais do estabelecimento. Não são rateados entre clientes, regiõ
 
 A tela consome um endpoint consolidado para que indicadores e gráficos sejam calculados no mesmo conjunto de pedidos. O MongoDB pode receber alterações entre leituras de pedidos, clientes e custos, portanto a resposta não representa um snapshot transacional contábil.
 
-A atualização automática usa os últimos filtros aplicados, pausa com aba oculta e evita requisições sobrepostas. Uma nova consulta cancela a anterior. O tempo limite da consulta é 20 segundos. Em erro, os dados anteriores ficam esmaecidos e há mensagem explícita de desatualização.
+A atualização automática usa os últimos filtros aplicados, pausa com aba oculta e evita requisições sobrepostas. Uma nova consulta cancela a anterior. O tempo limite da consulta é 20 segundos. Em erro, as seções permanecem visíveis. Antes da primeira resposta válida, os indicadores mostram Não disponível. Se já havia uma resposta válida, os dados anteriores ficam esmaecidos e recebem aviso explícito de desatualização.
 
 ## Modelo de dados
 
@@ -93,6 +93,7 @@ flowchart LR
 
 - `Pedido.regiaoVenda`: novo campo opcional. Pedidos anteriores continuam legíveis.
 - `Pedido.entrada`: índice crescente para recortar consultas no banco.
+- As consultas de período usam um único intervalo BSON por campo, com `$gte` e `$lt` para pedidos e `$gte` e `$lte` para datas dos custos. O teste `DashboardMongoQueryTest` verifica a montagem pelo Spring Data.
 - `CustoDiario.id`: data `AAAA-MM-DD`, chave única natural do lançamento diário.
 - `CustoDiario.versao`: controle otimista do Spring Data.
 - `DashboardResumo`: DTO consolidado, sem entidade Cliente completa nem credenciais.
@@ -223,9 +224,9 @@ node --check src/main/resources/static/js/dashboard.js
 
 O Node é necessário apenas para a checagem opcional de sintaxe JavaScript, não para executar o sistema Java.
 
-A evidência resumida está em [evidencias/testes-dashboard.txt](evidencias/testes-dashboard.txt). Os testes novos estão em `DashboardServiceTest` e `DashboardApiTest`. O primeiro verifica cálculos e filtros. O segundo executa controller, DTO, serviço real e filtros de segurança com repositórios simulados. Os testes anteriores permanecem no projeto.
+A evidência resumida está em [evidencias/testes-dashboard.txt](evidencias/testes-dashboard.txt). A suíte tem 60 testes. DashboardServiceTest verifica cálculos e filtros. DashboardApiTest executa controller, DTO, serviço real e filtros de segurança com repositórios simulados. DashboardMongoQueryTest verifica os intervalos BSON montados pelos repositórios. DataInitializerTest cobre o primeiro acesso seguro. Os testes anteriores de pedidos, auditoria, permissões e telas permanecem na suíte.
 
-Os testes não comprovam por si só persistência e renderização no navegador conectado ao Atlas. Essa verificação ao vivo é registrada separadamente na evidência, com suas limitações. Não foram inseridos pedidos ou custos fictícios no banco real para produzir indicadores.
+Os testes automatizados não exigem Atlas. O responsável confirmou o carregamento do dashboard com seu banco em 05/11/2026 após a correção das consultas. Essa confirmação manual é registrada separadamente em [evidencias/validacao-manual.md](evidencias/validacao-manual.md), sem atribuir aos testes simulados uma validação de persistência real. A resposta JSON de exemplo usa dados de teste, não extraídos do banco do responsável.
 
 ## Roteiro de apresentação de até três minutos
 
@@ -240,10 +241,10 @@ Os testes não comprovam por si só persistência e renderização no navegador 
 
 Gravar a execução real com dados do projeto. O vídeo final deve ser disponibilizado no GitHub por link no README ou outro formato aceito pelo professor. Este documento não substitui a gravação individual.
 
-## Correcao do feedback de seguranca da M1
+## Segurança das contas
 
 A inicializacao deixou de criar usuarios com senhas padronizadas no codigo. O primeiro ADMIN de um banco novo exige BOOTSTRAP_ADMIN_USERNAME e BOOTSTRAP_ADMIN_PASSWORD, sem valores padrao. O iniciador Windows pode receber esses valores por entrada oculta com -CriarAdministrador. A senha nao e salva em arquivo e e persistida no banco apenas como hash BCrypt.
 
 Quando ja existe ADMIN, o bootstrap nao altera contas. Credenciais de GERENTE e ATENDENTE sao definidas pelo administrador na tela Usuarios. Um login existente nao pode ser promovido pelo bootstrap. As senhas antigas do banco devem ser trocadas pela interface, pois remover senhas do codigo nao modifica os hashes armazenados.
 
-O teste DataInitializerTest cobre nove cenarios desta correcao. A compilacao completa passou com 59 testes. As instrucoes de primeiro acesso estao no README.
+O teste DataInitializerTest cobre nove cenarios desta correcao. A suíte completa tem 60 testes aprovados. As instrucoes de primeiro acesso estao no README.
