@@ -52,13 +52,10 @@ A resposta em resposta-api-dados-de-teste.json usa um pedido finalizado de R$ 90
 
 VALIDAÇÃO MANUAL
 O responsável informou em 05/11/2026 que o dashboard passou a funcionar com o Atlas e que revisou as contas.
-O relato manual e a lista de conferência para a gravação estão em validacao-manual.md.
+O relato da validação manual está em validacao-manual.md.
 Nenhuma senha foi coletada nesta revisão.
 
 LIMITES
-A suíte não comprova a persistência real de um custo no Atlas nem o vídeo individual.
+A suíte não comprova a persistência real de um custo no Atlas.
 O teste de indisponibilidade simula falha de repositório. Não atesta uma falha real atual do banco.
 O tratamento 409 está implementado para conflitos de versão, mas não foi testado em uma disputa concorrente real contra o Atlas.
-
-APRESENTAÇÃO
-Vídeo de até três minutos ainda aguardando gravação e inclusão do link no README.

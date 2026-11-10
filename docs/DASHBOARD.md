@@ -210,7 +210,7 @@ Exemplo:
 - `develop`: base de integração da evolução M2.
 - `feature/dashboard-administrativo`: implementação da API e do painel.
 
-Fluxo: feature -> PR para develop -> validação da demonstração -> integração da entrega na main. O código não deve ser entregue apontando para uma branch sem avisar qual versão o professor deve consultar.
+Fluxo: feature -> PR para develop -> validação funcional -> integração da entrega na main. O código não deve ser entregue apontando para uma branch sem avisar qual versão o professor deve consultar.
 
 ## Evidências e execução dos testes
 
@@ -227,19 +227,6 @@ O Node é necessário apenas para a checagem opcional de sintaxe JavaScript, nã
 A evidência resumida está em [evidencias/testes-dashboard.txt](evidencias/testes-dashboard.txt). A suíte tem 60 testes. DashboardServiceTest verifica cálculos e filtros. DashboardApiTest executa controller, DTO, serviço real e filtros de segurança com repositórios simulados. DashboardMongoQueryTest verifica os intervalos BSON montados pelos repositórios. DataInitializerTest cobre o primeiro acesso seguro. Os testes anteriores de pedidos, auditoria, permissões e telas permanecem na suíte.
 
 Os testes automatizados não exigem Atlas. O responsável confirmou o carregamento do dashboard com seu banco em 05/11/2026 após a correção das consultas. Essa confirmação manual é registrada separadamente em [evidencias/validacao-manual.md](evidencias/validacao-manual.md), sem atribuir aos testes simulados uma validação de persistência real. A resposta JSON de exemplo usa dados de teste, não extraídos do banco do responsável.
-
-## Roteiro de apresentação de até três minutos
-
-| Tempo | Mostrar e justificar |
-| --- | --- |
-| 0:00 a 0:25 | Entrar como ADMIN ou GERENTE, abrir dashboard e explicar que os dados vêm da API |
-| 0:25 a 1:05 | Indicadores, situação e filtros de período/horário. Explicar que faturamento usa finalizados e ticket é valor por pedido |
-| 1:05 a 1:40 | Gráficos por dia/mês, horário, região e rankings. Filtrar um cliente e mostrar a evolução |
-| 1:40 a 2:10 | Custo de um dia, cobertura e resultado operacional. Explicar por que custo ausente não equivale a zero |
-| 2:10 a 2:40 | Aba Rede mostrando GET /api/dashboard, parâmetros e resposta. Mostrar filtro inválido ou bloqueio de ATENDENTE |
-| 2:40 a 3:00 | Documento de requisitos, testes e branch feature no GitHub. Explicar preservação de histórico e concluir |
-
-Gravar a execução real com dados do projeto. O vídeo final deve ser disponibilizado no GitHub por link no README ou outro formato aceito pelo professor. Este documento não substitui a gravação individual.
 
 ## Segurança das contas
 
