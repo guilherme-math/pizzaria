@@ -1,4 +1,4 @@
-param([switch]$Reconfigurar)
+param([switch]$Reconfigurar, [switch]$CriarAdministrador)
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
 
@@ -22,6 +22,21 @@ if ($Reconfigurar -or -not $env:MONGODB_URI) {
     $segredo = Import-Clixml -LiteralPath $arquivo
     $env:MONGODB_URI = [System.Net.NetworkCredential]::new('', $segredo).Password
 }
+$bootstrapLoginAnterior = $env:BOOTSTRAP_ADMIN_USERNAME
+$bootstrapSenhaAnterior = $env:BOOTSTRAP_ADMIN_PASSWORD
+if ($CriarAdministrador) {
+    $env:BOOTSTRAP_ADMIN_USERNAME = Read-Host 'Escolha o login do primeiro administrador (sem espacos)'
+    $senhaInicial = Read-Host 'Escolha uma senha exclusiva com pelo menos 12 caracteres' -AsSecureString
+    $env:BOOTSTRAP_ADMIN_PASSWORD = [System.Net.NetworkCredential]::new('', $senhaInicial).Password
+    Remove-Variable senhaInicial
+}
 Write-Host 'Iniciando PediuPatrao. Acesse http://localhost:8080 quando aparecer Started.'
-& .\mvnw.cmd spring-boot:run
-exit $LASTEXITCODE
+try {
+    & .\mvnw.cmd spring-boot:run
+    $codigoSaida = $LASTEXITCODE
+} finally {
+    $env:BOOTSTRAP_ADMIN_USERNAME = $bootstrapLoginAnterior
+    $env:BOOTSTRAP_ADMIN_PASSWORD = $bootstrapSenhaAnterior
+    Remove-Variable bootstrapSenhaAnterior, bootstrapLoginAnterior
+}
+exit $codigoSaida

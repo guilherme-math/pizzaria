@@ -18,6 +18,7 @@ public class Pedido {
     @Version private Long versao;
     private String clienteId;
     private String clienteNome;
+    private String regiaoVenda;
     private String status;
     private List<ItemPedido> itens = new ArrayList<>();
     private BigDecimal subtotal = BigDecimal.ZERO;

@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .csrf(org.springframework.security.config.Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/dist/**", "/plugins/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/dashboard", "/api/dashboard", "/api/dashboard/**").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers("/usuarios/**", "/api/usuarios/**", "/admin", "/configuracoes").hasRole("ADMIN")
                         .requestMatchers("/auditoria/**", "/api/auditoria/**").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers("/api/pedidos/*/desconto", "/api/pedidos/*/cancelamento").hasRole("GERENTE")
@@ -83,6 +84,3 @@ public class SecurityConfig {
         };
     }
 }
-
-
-

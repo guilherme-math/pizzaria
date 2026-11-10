@@ -1,12 +1,33 @@
-# PediuPatrao: Pratica M1 Parte 2
+# Pediu Patrão
 
-Evolucao individual do sistema de pedidos em Java 21, Spring Boot 3.4.4, Spring Security, Thymeleaf e MongoDB Atlas. A arquitetura original de entidades, repositorios, servicos e controladores foi preservada.
+Sistema de pedidos com dashboard administrativo, desenvolvido em Java 21, Spring Boot 3.4.4, Spring Security, Thymeleaf e MongoDB Atlas. A aplicação reúne cadastro de clientes e produtos, fluxo de pedidos, permissões por perfil, auditoria e análise de vendas.
+
+## Dashboard administrativo M2
+
+Acesse `/dashboard` após entrar como ADMIN ou GERENTE. O painel usa o mesmo layout e menu das demais telas e consome sua própria API. Os gráficos usam Chart.js local. Bootstrap e ícones seguem as dependências da interface existente.
+
+O painel apresenta faturamento líquido, ticket médio, pedidos, clientes atendidos, situação dos pedidos, vendas por período, horário e região, produtos mais vendidos, vendas por cliente e custos operacionais diários. Os filtros permitem período, faixa de horário, região, cliente, situação e agrupamento por dia ou mês. Há atualização manual e automática a cada 60 segundos.
+
+Faturamento e ticket médio consideram pedidos finalizados após descontos. O período usa a entrada do pedido no horário de São Paulo. Custos são informados por dia. Sem todos os dias preenchidos, ou com um recorte segmentado, o resultado operacional fica indisponível.
+
+- [Requisitos, decisões de projeto e contratos da API](docs/DASHBOARD.md)
+- [Evidências dos testes automatizados](docs/evidencias/testes-dashboard.txt)
+- [Registro da validação manual](docs/evidencias/validacao-manual.md)
+- [Exemplo de resposta gerada com dados de teste](docs/evidencias/resposta-api-dados-de-teste.json)
+
+## Apresentação
+
+[Assistir à demonstração do dashboard administrativo (2min51s)](https://youtu.be/HVxu1YHBECY)
+
+## Versão e branches
+
+A versão completa da atividade M2 está disponível na branch `main`. A implementação foi organizada na branch `feature/dashboard-administrativo` e integrada por `develop`. A branch feature foi mantida para consulta do desenvolvimento da API e do dashboard.
 
 ## Executar no Windows
 
 1. Instale JDK 21 e Git. Abra a pasta que contem `pom.xml` na IDE.
 2. Crie um cluster gratuito MongoDB Atlas, um usuario do banco e autorize seu IP atual.
-3. Execute `Iniciar.cmd`. Na primeira execucao de uma copia nova, informe a URI completa do Atlas com usuario e senha. A URI fica criptografada pelo Windows em `.local/mongodb.xml`, vinculada ao usuario do Windows. A pasta `.local/` nao deve ser enviada ao GitHub.
+3. Se o banco já possui um ADMIN, execute `Iniciar.cmd`. Para banco novo, use o comando com `-CriarAdministrador` da seção de primeiro acesso. Na primeira execucao de uma copia nova, informe a URI completa do Atlas com usuario e senha. A URI fica criptografada pelo Windows em `.local/mongodb.xml`, vinculada ao usuario do Windows. A pasta `.local/` nao deve ser enviada ao GitHub.
 4. Aguarde a mensagem `Started PizzariaPedidosApplication` e acesse http://localhost:8080.
 5. Pare com Ctrl+C. Para iniciar novamente, execute `Iniciar.cmd`.
 
@@ -26,19 +47,25 @@ Alternativa multiplataforma: configure `JAVA_HOME` para JDK 21 e `MONGODB_URI` n
 
 A persistencia de pedidos/clientes e auditoria utiliza transacoes MongoDB. Exige replica set, disponivel no Atlas. Um MongoDB local standalone nao atende a esta configuracao.
 
-## Contas de demonstracao
+## Primeiro acesso sem senhas padrao
 
-Criadas somente quando ausentes. Senhas existentes nao sao redefinidas no reinicio.
+O projeto nao cria contas de demonstracao nem possui senhas iniciais fixas. Em um banco sem ADMIN, forneca o login e uma senha exclusiva por variaveis de ambiente apenas para a primeira inicializacao. A senha inicial exige pelo menos 12 caracteres e no maximo 72 bytes UTF-8. O login aceita de 3 a 80 letras, numeros, pontos, hifens ou sublinhados.
 
-| Usuario | Senha inicial | Perfil |
-|---|---|---|
-| admin | teste123 | ADMIN |
-| gerente | Gerente123 | GERENTE |
-| atendente | Atendente123 | ATENDENTE |
+No Windows, use a entrada oculta do iniciador:
 
-Sao contas de demonstracao academica. Novos usuarios e novas senhas exigem pelo menos oito caracteres. O login admin original foi preservado para compatibilidade.
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Iniciar.ps1 -CriarAdministrador
+```
 
-## Permissoes
+O script pergunta login e senha, passa a configuracao ao processo Java e nao grava a senha inicial em arquivo. Depois que o administrador existir, inicie normalmente com `Iniciar.cmd`. Cadastre GERENTE e ATENDENTE pela tela Usuarios, escolhendo senhas individuais.
+
+Em outros ambientes, injete `BOOTSTRAP_ADMIN_USERNAME` e `BOOTSTRAP_ADMIN_PASSWORD` pelo gerenciador de segredos ou ambiente de execucao, junto de `MONGODB_URI`. Nao escreva os valores no repositorio, no README, em argumentos de linha de comando ou em logs. Retire as variaveis de bootstrap apos o primeiro cadastro.
+
+Se ja houver um ADMIN, a configuracao de bootstrap e ignorada. Nenhuma senha e redefinida no reinicio. Se o login informado ja pertencer a outra conta, o bootstrap e recusado, sem promover o usuario existente.
+
+**Bancos da versao anterior:** remover as senhas fixas do codigo nao troca os hashes ja salvos. Entre como ADMIN e altere, pela tela Usuarios, as senhas das antigas contas de demonstracao, usando valores exclusivos. Nao e necessario apagar clientes, pedidos ou auditorias. A migracao de perfis USER passa a ATENDENTE e nunca concede ADMIN apenas pelo nome do login.
+
+## Permissões
 
 | Operacao | ADMIN | GERENTE | ATENDENTE |
 |---|---|---|---|
@@ -53,10 +80,12 @@ Sao contas de demonstracao academica. Novos usuarios e novas senhas exigem pelo 
 | Consultar produtos | Sim | Sim | Sim |
 | Cadastrar / editar / excluir produtos | Sim | Sim | Nao |
 | Consultar auditoria | Sim | Sim | Nao |
+| Consultar dashboard e indicadores | Sim | Sim | Nao |
+| Informar custos operacionais diarios | Sim | Sim | Nao |
 
 Decisoes para operacoes nao detalhadas no enunciado: o GERENTE executa transicoes operacionais. ADMIN e GERENTE mantem o catalogo de produtos. A exclusao de cliente e preservada para ATENDENTE, mas bloqueada se houver pedidos associados. O usuario nao pode excluir sua propria conta nem alterar seu proprio login ou perfil. O perfil e revalidado no banco a cada requisicao para evitar privilegios antigos na sessao.
 
-## Requisitos implementados
+## Funcionalidades do sistema de pedidos M1
 
 - **RF01:** tres perfis, autenticacao com perfil persistido, autorizacao de paginas e APIs, protecao de servicos sensiveis, CSRF em formularios e chamadas JavaScript, senha omitida dos retornos JSON e do formulario de edicao. Administracao de perfis restrita ao ADMIN.
 - **RF02:** itens com quantidades e precos copiados do catalogo. Subtotal, desconto e total calculados em BigDecimal no servidor. Identificacao e horario de entrada obtidos da sessao e do relogio do servidor. DTO de entrada nao aceita total, preco unitario, responsavel ou status como fonte de dados.
@@ -78,7 +107,9 @@ Pedidos antigos permanecem consultaveis com seus campos legados. Pedidos com est
 - `service/PedidoService`: calculos, transicoes, descontos e cancelamentos.
 - `service/ClienteService` e `AuditoriaService`: alteracoes cadastrais e eventos persistentes.
 - `controller/AuditoriaController` e `ErroAdvice`: consulta restrita e mensagens de erro.
-- Templates de usuarios, clientes, produtos, pedidos e auditoria: operacoes e navegacao por perfil.
+- Templates de usuários, clientes, produtos, pedidos, auditoria e dashboard: operações e navegação no mesmo layout.
+- Pacote `dashboard`: controller, filtros, DTOs, serviço analítico e repositório de custos.
+- `dashboard.js` e `dashboard.css`: consumo da API, gráficos e ajustes visuais do painel.
 
 ## Testes
 
@@ -92,7 +123,7 @@ Com JDK 21 configurado:
 Os testes nao exigem Atlas: usam repositorios simulados e Spring MVC com filtros reais de seguranca. Cobrem calculos, regras, auditoria, bloqueios com CSRF valido, revogacao de perfil na sessao, omissao de senha e renderizacao das telas Thymeleaf. Nao substituem a verificacao da persistencia real no Atlas.
 
 
-## Principais APIs
+## APIs do sistema de pedidos M1
 
 Todas exigem sessao autenticada. Alteracoes exigem token CSRF. Para APIs de escrita, use JSON com Content-Type application/json.
 

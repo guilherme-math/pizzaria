@@ -1,0 +1,60 @@
+EVIDÊNCIAS DOS TESTES DO DASHBOARD ADMINISTRATIVO
+Execução final em 10/11/2026, fuso America/Sao_Paulo
+
+Comando executado: .\mvnw.cmd -q package
+Resultado: exit code 0. Compilação, testes e geração do JAR concluídos.
+
+com.umc.pediupatrao.AuditoriaServiceTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.640 s -- in com.umc.pediupatrao.AuditoriaServiceTest
+com.umc.pediupatrao.config.DataInitializerTest
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.315 s -- in com.umc.pediupatrao.config.DataInitializerTest
+com.umc.pediupatrao.DashboardApiTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.163 s -- in com.umc.pediupatrao.DashboardApiTest
+com.umc.pediupatrao.DashboardMongoQueryTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.649 s -- in com.umc.pediupatrao.DashboardMongoQueryTest
+com.umc.pediupatrao.DashboardServiceTest
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in com.umc.pediupatrao.DashboardServiceTest
+com.umc.pediupatrao.PedidoServiceTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s -- in com.umc.pediupatrao.PedidoServiceTest
+com.umc.pediupatrao.SecurityAccessTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.175 s -- in com.umc.pediupatrao.SecurityAccessTest
+com.umc.pediupatrao.TelasTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.697 s -- in com.umc.pediupatrao.TelasTest
+
+TOTAL: 60 testes, 0 falhas, 0 erros, 0 ignorados.
+Sintaxe JavaScript: node --check src/main/resources/static/js/dashboard.js, exit code 0.
+
+ESCOPO DA SUÍTE
+DashboardServiceTest: 16 cenários de cálculo, filtros, fuso, região histórica, dados incompletos e custos.
+DashboardApiTest: 10 cenários de contratos HTTP, autorização, CSRF, validação, falha de banco e renderização.
+DashboardMongoQueryTest: 1 cenário de montagem real dos intervalos BSON pelo Spring Data para pedidos e custos, sem acessar o Atlas.
+DataInitializerTest: 9 cenários do primeiro administrador, sem credenciais padrão, sem redefinição de senha e sem promoção de conta existente.
+Os 24 testes anteriores de pedidos, auditoria, segurança e telas continuam aprovados.
+
+RESULTADOS COBERTOS
+Faturamento líquido e ticket médio somente de pedidos finalizados com valor válido.
+Cancelados e pedidos ainda em atendimento não entram no financeiro.
+Zero para ausência de vendas válidas e nenhuma divisão por zero.
+Limites UTC correspondentes ao dia local em São Paulo e agrupamento diário ou mensal.
+Faixa de horário noturna e fim da faixa exclusivo.
+Filtros combinados por região, cliente e situação.
+Região histórica preservada e uso do cadastro atual para pedidos legados com aviso.
+Ranking por unidades e valor bruto dos itens, separado do faturamento líquido.
+Custos negativos ou com precisão inválida recusados. Custo zero explícito aceito.
+Resultado operacional somente com custos completos e consulta geral.
+ADMIN e GERENTE acessam o painel. ATENDENTE recebe 403. Escrita sem CSRF recebe 403.
+Parâmetros inválidos recebem 400. Falha simulada de banco recebe 503 sem detalhes internos.
+Consulta de pedidos usa entrada com $gte e $lt no mesmo campo BSON. Custos usam _id com $gte e $lte.
+
+DADOS DE TESTE
+Os repositórios dos testes são simulados. Não há conexão obrigatória ao Atlas para rodar esta suíte.
+A resposta em resposta-api-dados-de-teste.json usa um pedido finalizado de R$ 90,00 e itens históricos, sem representar os dados reais do banco.
+
+VALIDAÇÃO MANUAL
+Em 05/11/2026, validei o carregamento do dashboard com o Atlas e revisei as contas do sistema.
+Registrei essa conferência em validacao-manual.md.
+
+LIMITES
+A suíte não comprova a persistência real de um custo no Atlas.
+O teste de indisponibilidade simula falha de repositório. Não atesta uma falha real atual do banco.
+O tratamento 409 está implementado para conflitos de versão, mas não foi testado em uma disputa concorrente real contra o Atlas.

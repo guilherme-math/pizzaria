@@ -1,0 +1,60 @@
+<div th:fragment="content" class="dashboard" xmlns:th="http://www.thymeleaf.org">
+<header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div><h1 class="h2 mb-0">Dashboard administrativo</h1><p class="text-muted mt-2">Acompanhe vendas, pedidos e produtos em um só lugar.</p></div>
+    <div class="text-end"><div id="atualizado" class="small text-muted mb-2" aria-live="polite">Aguardando consulta</div>
+    <label class="small"><input id="automatico" type="checkbox" checked> Atualizar a cada 60 segundos</label></div>
+</header>
+
+<div class="card mb-4"><div class="card-body">
+<form id="filtros"><div class="row">
+    <div class="col-6 col-md-2"><label for="inicio">De</label><input class="form-control" id="inicio" name="inicio" type="date" required></div>
+    <div class="col-6 col-md-2"><label for="fim">Até</label><input class="form-control" id="fim" name="fim" type="date" required></div>
+    <div class="col-6 col-md-2"><label for="horaInicio">Das</label><input class="form-control" id="horaInicio" name="horaInicio" type="time"></div>
+    <div class="col-6 col-md-2"><label for="horaFim">Até o horário</label><input class="form-control" id="horaFim" name="horaFim" type="time"></div>
+    <div class="col-6 col-md-2"><label for="agrupamento">Agrupar por</label><select class="form-control" id="agrupamento" name="agrupamento"><option value="DIA">Dia</option><option value="MES">Mês</option></select></div>
+    <div class="col-6 col-md-2"><label for="status">Situação</label><select class="form-control" id="status" name="status"><option value="">Todas</option></select></div>
+</div><div class="row mt-3 align-items-end">
+    <div class="col-md-4"><label for="regiao">Região (cidade / bairro)</label><select class="form-control" id="regiao" name="regiao"><option value="">Todas as regiões</option></select></div>
+    <div class="col-md-4"><label for="clienteId">Cliente</label><select class="form-control" id="clienteId" name="clienteId"><option value="">Todos os clientes</option></select></div>
+    <div class="col-md-4 mt-3 mt-md-0 d-flex"><button id="consultar" class="btn btn-primary flex-fill me-2" type="submit">Aplicar filtros</button><button class="btn btn-outline-secondary" type="button" id="limpar">Limpar</button></div>
+</div></form>
+<p class="small text-muted mt-3 mb-0">Período pela entrada do pedido. Faturamento e rankings consideram somente finalizados, após descontos. A faixa de horário inclui o início e exclui o fim. Exemplo: 22h a 02h atravessa a meia-noite.</p>
+</div></div>
+<div id="erro" class="alert alert-danger" role="alert" hidden></div>
+<div id="carregando" role="status" class="alert alert-light" hidden><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Consultando os dados da operação...</div>
+<div id="avisos" aria-live="polite"></div>
+<div id="vazio" class="callout callout-info" hidden><h2 class="h5">Nenhum pedido neste recorte</h2><p class="mb-0">Ajuste o período ou os filtros. Os indicadores abaixo mostram zero, sem dados simulados.</p></div>
+<div id="resultado" aria-busy="true">
+<div class="row" id="indicadores">
+    <div class="col-sm-6 col-xl-3"><div class="card kpi"><div class="card-body"><p>Faturamento líquido</p><h2 id="faturamento">Não disponível</h2><span>Pedidos finalizados</span></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card kpi"><div class="card-body"><p>Ticket médio</p><h2 id="ticket">Não disponível</h2><span>Valor por pedido finalizado</span></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card kpi"><div class="card-body"><p>Pedidos no período</p><h2 id="pedidos">Não disponível</h2><span id="finalizados">Aguardando dados</span></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="card kpi"><div class="card-body"><p>Clientes atendidos</p><h2 id="clientes">Não disponível</h2><span id="cancelados">Aguardando dados</span></div></div></div>
+</div>
+<div class="row">
+    <div class="col-lg-8"><div class="card"><div class="card-header"><h2 class="card-title">Vendas por período</h2><span class="card-tools text-muted small">Faturamento líquido em R$</span></div><div class="card-body"><div class="chart-area"><canvas id="graficoPeriodo" role="img" aria-label="Vendas por dia ou mês"></canvas></div><details class="mt-3"><summary>Consultar valores do gráfico</summary><div id="tabelaPeriodo" class="table-responsive"></div></details></div></div></div>
+    <div class="col-lg-4"><div class="card"><div class="card-header"><h2 class="card-title">Situação dos pedidos</h2></div><div class="card-body"><div class="chart-area"><canvas id="graficoStatus" role="img" aria-label="Quantidade de pedidos por situação"></canvas></div><div id="listaStatus" class="mt-3"></div></div></div></div>
+</div>
+<div class="row">
+    <div class="col-lg-6"><div class="card"><div class="card-header"><h2 class="card-title">Vendas por horário</h2><span class="card-tools text-muted small">Hora de entrada do pedido</span></div><div class="card-body"><div class="chart-area"><canvas id="graficoHorario" role="img" aria-label="Faturamento por hora"></canvas></div><details class="mt-3"><summary>Consultar valores do gráfico</summary><div id="tabelaHorario" class="table-responsive"></div></details></div></div></div>
+    <div class="col-lg-6"><div class="card"><div class="card-header"><h2 class="card-title">Vendas por região</h2><span class="card-tools text-muted small">10 maiores por faturamento</span></div><div class="card-body"><div class="chart-area"><canvas id="graficoRegiao" role="img" aria-label="Faturamento por região"></canvas></div><details class="mt-3"><summary>Consultar todas as regiões</summary><div id="tabelaRegiao" class="table-responsive"></div></details></div></div></div>
+</div>
+<div class="row">
+    <div class="col-lg-6"><div class="card"><div class="card-header"><h2 class="card-title">Produtos mais vendidos</h2><span class="card-tools text-muted small">Top 10 por unidades</span></div><div class="card-body p-0 table-responsive" id="tabelaProdutos"></div><div class="card-footer small text-muted">Valores brutos dos itens, antes do desconto do pedido. Preços preservados no momento da venda.</div></div></div>
+    <div class="col-lg-6"><div class="card"><div class="card-header"><h2 class="card-title">Clientes com maior faturamento</h2><span class="card-tools text-muted small">Top 10 no recorte</span></div><div class="card-body p-0 table-responsive" id="tabelaClientes"><p class="text-muted p-3 mb-0">Selecione um cliente no filtro para consultar as vendas dele por dia ou mês.</p></div></div></div>
+</div>
+<div class="card"><div class="card-header"><h2 class="card-title">Custos operacionais diários</h2><span id="coberturaCustos" class="card-tools small text-muted"></span></div><div class="card-body">
+<p class="text-muted">Informe o total de despesas de cada dia, incluindo dias sem custo (R$ 0,00). Os custos são gerais do período, sem rateio por horário, região ou cliente.</p>
+<div class="row"><div class="col-md-6"><p class="mb-1">Custos informados no período</p><h3 id="totalCustos">Não disponível</h3></div><div class="col-md-6"><p class="mb-1">Resultado operacional (vendas menos custos)</p><h3 id="resultadoOperacional">Não informado</h3><small id="motivoResultado" class="text-muted"></small></div></div>
+<form id="formCusto" class="row mt-3 align-items-end">
+    <div class="col-md-3"><label for="dataCusto">Dia</label><input class="form-control" id="dataCusto" type="date" required></div>
+    <div class="col-md-3"><label for="valorCusto">Total do dia (R$)</label><input class="form-control" id="valorCusto" type="number" min="0" max="999999999.99" step="0.01" required></div>
+    <div class="col-md-4"><label for="observacaoCusto">Observação</label><input class="form-control" id="observacaoCusto" maxlength="500" placeholder="Ex.: ingredientes, energia, entregas"></div>
+    <div class="col-md-2 mt-3 mt-md-0"><button class="btn btn-primary w-100" type="submit">Salvar custo</button></div>
+</form><p class="small text-muted mt-2">Salvar novamente para a mesma data substitui o total daquele dia.</p>
+<div id="custoFeedback" role="status" class="small"></div><div id="tabelaCustos" class="table-responsive mt-3"></div>
+</div></div>
+</div>
+<script th:src="@{/plugins/chart.js/Chart.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+</div>
