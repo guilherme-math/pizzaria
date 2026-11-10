@@ -226,7 +226,7 @@ O Node é necessário apenas para a checagem opcional de sintaxe JavaScript, nã
 
 A evidência resumida está em [evidencias/testes-dashboard.txt](evidencias/testes-dashboard.txt). A suíte tem 60 testes. DashboardServiceTest verifica cálculos e filtros. DashboardApiTest executa controller, DTO, serviço real e filtros de segurança com repositórios simulados. DashboardMongoQueryTest verifica os intervalos BSON montados pelos repositórios. DataInitializerTest cobre o primeiro acesso seguro. Os testes anteriores de pedidos, auditoria, permissões e telas permanecem na suíte.
 
-Os testes automatizados não exigem Atlas. O responsável confirmou o carregamento do dashboard com seu banco em 05/11/2026 após a correção das consultas. Essa confirmação manual é registrada separadamente em [evidencias/validacao-manual.md](evidencias/validacao-manual.md), sem atribuir aos testes simulados uma validação de persistência real. A resposta JSON de exemplo usa dados de teste, não extraídos do banco do responsável.
+Os testes automatizados não exigem Atlas. Em 05/11/2026, validei o carregamento do dashboard com o Atlas após a correção das consultas. Registrei essa conferência em [evidencias/validacao-manual.md](evidencias/validacao-manual.md). Separei a validação manual dos testes simulados, que não comprovam a persistência real no Atlas. O exemplo de resposta JSON usa dados de teste, não extraídos do banco.
 
 ## Segurança das contas
 

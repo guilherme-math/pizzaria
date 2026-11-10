@@ -48,12 +48,11 @@ Consulta de pedidos usa entrada com $gte e $lt no mesmo campo BSON. Custos usam 
 
 DADOS DE TESTE
 Os repositórios dos testes são simulados. Não há conexão obrigatória ao Atlas para rodar esta suíte.
-A resposta em resposta-api-dados-de-teste.json usa um pedido finalizado de R$ 90,00 e itens históricos, sem representar os dados reais do responsável.
+A resposta em resposta-api-dados-de-teste.json usa um pedido finalizado de R$ 90,00 e itens históricos, sem representar os dados reais do banco.
 
 VALIDAÇÃO MANUAL
-O responsável informou em 05/11/2026 que o dashboard passou a funcionar com o Atlas e que revisou as contas.
-O relato da validação manual está em validacao-manual.md.
-Nenhuma senha foi coletada nesta revisão.
+Em 05/11/2026, validei o carregamento do dashboard com o Atlas e revisei as contas do sistema.
+Registrei essa conferência em validacao-manual.md.
 
 LIMITES
 A suíte não comprova a persistência real de um custo no Atlas.

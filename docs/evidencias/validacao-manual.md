@@ -1,14 +1,14 @@
 # Validação manual
 
-## Resultado informado pelo responsável
+## Validação com o MongoDB Atlas
 
-Em 05/11/2026, o responsável informou que o dashboard passou a funcionar com o MongoDB Atlas e que revisou todos os usuários do sistema. A confirmação ocorreu depois da atualização do IP autorizado no Atlas e da correção dos intervalos das consultas de pedidos e custos.
+Em 05/11/2026, validei o carregamento do dashboard com os dados do MongoDB Atlas e revisei os usuários do sistema. Realizei essa conferência após atualizar o IP autorizado no Atlas e corrigir os intervalos das consultas de pedidos e custos.
 
-Esse relato confirma o carregamento do painel na execução do responsável. Ele não equivale a um relatório de teste automatizado contra o Atlas. Não foram coletados valores de senha nem conferidos seus conteúdos.
+Essa validação manual confirmou o carregamento do painel conectado ao banco. Registrei os testes automatizados separadamente, pois eles usam repositórios simulados e não comprovam, por si só, a persistência no Atlas.
 
 ## Verificações automatizadas associadas
 
-- Os filtros BSON foram conferidos usando o mecanismo real de repositórios Spring Data, sem conexão ao banco.
-- Cálculos, filtros, custos e autorização foram testados com repositórios simulados.
-- A resposta JSON em resposta-api-dados-de-teste.json é uma evidência com dados de teste.
-- Quantidades e resultados da suíte estão em testes-dashboard.txt.
+- Conferi a montagem dos filtros BSON pelo mecanismo real de repositórios Spring Data, sem conexão ao banco.
+- Validei cálculos, filtros, custos e autorização com repositórios simulados.
+- Mantive um exemplo de resposta JSON com dados de teste em [resposta-api-dados-de-teste.json](resposta-api-dados-de-teste.json).
+- Registrei as quantidades e os resultados da suíte em [testes-dashboard.txt](testes-dashboard.txt).
