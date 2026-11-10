@@ -15,9 +15,13 @@ Faturamento e ticket médio consideram pedidos finalizados após descontos. O pe
 - [Registro da validação manual](docs/evidencias/validacao-manual.md)
 - [Exemplo de resposta gerada com dados de teste](docs/evidencias/resposta-api-dados-de-teste.json)
 
+## Apresentação
+
+[Assistir à demonstração do dashboard administrativo (2min51s)](https://youtu.be/HVxu1YHBECY)
+
 ## Versão e branches
 
-A implementação da API e do dashboard está na branch `feature/dashboard-administrativo`, com integração prevista pelo PR para `develop` e depois para `main`. A branch feature será mantida para identificar o trabalho desta atividade. Enquanto a integração não for concluída, consulte essa branch para executar a versão M2.
+A versão completa da atividade M2 está disponível na branch `main`. A implementação foi organizada na branch `feature/dashboard-administrativo` e integrada por `develop`. A branch feature foi mantida para consulta do desenvolvimento da API e do dashboard.
 
 ## Executar no Windows
 

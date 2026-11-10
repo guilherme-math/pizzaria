@@ -210,7 +210,7 @@ Exemplo:
 - `develop`: base de integração da evolução M2.
 - `feature/dashboard-administrativo`: implementação da API e do painel.
 
-Fluxo: feature -> PR para develop -> validação funcional -> integração da entrega na main. O código não deve ser entregue apontando para uma branch sem avisar qual versão o professor deve consultar.
+Fluxo utilizado: feature -> PR para develop -> validação funcional -> integração na main. A versão completa da entrega está na main. A branch feature foi mantida para consulta da implementação.
 
 ## Evidências e execução dos testes
 
